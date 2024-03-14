@@ -102,15 +102,15 @@ var createScene = function() {
             //Tomara un color al azar cada vez que es clicado
             hit.pickedMesh.material.diffuseColor = new BABYLON.Color3.Random();
             //Si no se ha mostrado el texto de antemano:
-            if (txt == NaN){
-                const txt = new BABYLON.GUI.TextBlock();
-                txt.text = "Hola, soy un cubo";
-                txt.color = "white";
-                txt.fontSize = 20;
-                txt.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-                txt.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-                gui.addControl(txt);
-            }
+            
+            const txt = new BABYLON.GUI.TextBlock();
+            txt.text = "Hola, soy un cubo";
+            txt.color = "white";
+            txt.fontSize = 20;
+            txt.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+            txt.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+            gui.addControl(txt);
+            
             
             
         }
