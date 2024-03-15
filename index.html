@@ -44,115 +44,115 @@
             }
         </style>
     </head>
-<body>
-    <div id="canvasZone"><canvas id="renderCanvas"></canvas></div>
-    <script>
-        var canvas = document.getElementById("renderCanvas");
-
-        var startRenderLoop = function (engine, canvas) {
-            engine.runRenderLoop(function () {
-                if (sceneToRender && sceneToRender.activeCamera) {
-                    sceneToRender.render();
+    <body>
+        <div id="canvasZone"><canvas id="renderCanvas"></canvas></div>
+        <script>
+            var canvas = document.getElementById("renderCanvas");
+    
+            var startRenderLoop = function (engine, canvas) {
+                engine.runRenderLoop(function () {
+                    if (sceneToRender && sceneToRender.activeCamera) {
+                        sceneToRender.render();
+                    }
+                });
+            }
+    
+            var engine = null;
+            var scene = null;
+            var sceneToRender = null;
+            var createDefaultEngine = function() { return new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true,  disableWebGL2Support: false}); };
+            // Función principal que crea la escena
+            var createScene = function() {
+                var escena = new BABYLON.Scene(engine);
+    
+                // Creamos la cámara 
+                var camera = new BABYLON.ArcRotateCamera("camera", BABYLON.Tools.ToRadians(90), BABYLON.Tools.ToRadians(65), 10, BABYLON.Vector3.Zero(), escena);
+                camera.setTarget(BABYLON.Vector3.Zero());
+                camera.attachControl(canvas, true);
+    
+    
+                // Creamos la fuente de luz
+                var luz = new BABYLON.HemisphericLight("luz", new BABYLON.Vector3(0, 1, 0), escena);
+                luz.intensity = 0.7;
+                
+                // Creamos el plano y lo cambiamos a un color verde
+                var plano = BABYLON.MeshBuilder.CreateGround("plano", { width: 6, height: 6 }, escena);
+    
+                var materialPlano = new BABYLON.StandardMaterial('materialPlano', escena);
+                materialPlano.diffuseColor = new BABYLON.Color3(0.24, 0.58, 0.29);
+                plano.material = materialPlano;
+    
+                // Creamos el cubo y por defecto será negro
+                var cubo = BABYLON.MeshBuilder.CreateBox("cubo", { size: 2 }, escena);
+                cubo.position.y = 1;
+    
+                var materialCubo = new BABYLON.StandardMaterial("materialCubo", escena);
+                materialCubo.diffuseColor = new BABYLON.Color3(0, 0, 0);
+                cubo.material = materialCubo;
+    
+                //Creamos la interfaz gráfica para mostrar el texto y el logo de LabsLand
+                const gui = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("GUI");
+    
+                //Creamos la función para cambiar el color del cubo y mostrar el texto
+                //si el cubo es clicado
+                escena.onPointerDown = function picked(){
+                    const hit = escena.pick(escena.pointerX, escena.pointerY);
+    
+                    if(hit.pickedMesh && hit.pickedMesh.name == "cubo"){
+                        //Tomara un color al azar cada vez que es clicado
+                        hit.pickedMesh.material.diffuseColor = new BABYLON.Color3.Random();
+                        
+                        const txt = new BABYLON.GUI.TextBlock();
+                        txt.text = "Hola, soy un cubo";
+                        txt.color = "white";
+                        txt.fontSize = 20;
+                        txt.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+                        txt.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+                        gui.addControl(txt);
+                        
+                        
+                    }
                 }
+    
+                //Añadimos la imagen a la interfaz previamente creada
+                const img = new BABYLON.GUI.Image("img", "https://i.imgur.com/TdTN2n7.jpg");
+                img.width = "100px";
+                img.height = "100px";
+                img.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+                img.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+                gui.addControl(img);
+                
+                return escena;
+            };
+    
+    
+    
+            window.initFunction = async function() {
+                        
+                        
+                        
+                var asyncEngineCreation = async function() {
+                    try {
+                    return createDefaultEngine();
+                    } catch(e) {
+                    console.log("the available createEngine function failed. Creating the default engine instead");
+                    return createDefaultEngine();
+                    }
+                }
+    
+                window.engine = await asyncEngineCreation();
+                if (!engine) throw 'engine should not be null.';
+                startRenderLoop(engine, canvas);
+                window.scene = createScene();
+            };
+            
+            initFunction().then(() => {sceneToRender = scene                    
             });
-        }
-
-        var engine = null;
-        var scene = null;
-        var sceneToRender = null;
-        var createDefaultEngine = function() { return new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true,  disableWebGL2Support: false}); };
-        // Función principal que crea la escena
-        var createScene = function() {
-            var escena = new BABYLON.Scene(engine);
-
-            // Creamos la cámara 
-            var camera = new BABYLON.ArcRotateCamera("camera", BABYLON.Tools.ToRadians(90), BABYLON.Tools.ToRadians(65), 10, BABYLON.Vector3.Zero(), escena);
-            camera.setTarget(BABYLON.Vector3.Zero());
-            camera.attachControl(canvas, true);
-
-
-            // Creamos la fuente de luz
-            var luz = new BABYLON.HemisphericLight("luz", new BABYLON.Vector3(0, 1, 0), escena);
-            luz.intensity = 0.7;
-            
-            // Creamos el plano y lo cambiamos a un color verde
-            var plano = BABYLON.MeshBuilder.CreateGround("plano", { width: 6, height: 6 }, escena);
-
-            var materialPlano = new BABYLON.StandardMaterial('materialPlano', escena);
-            materialPlano.diffuseColor = new BABYLON.Color3(0.24, 0.58, 0.29);
-            plano.material = materialPlano;
-
-            // Creamos el cubo y por defecto será negro
-            var cubo = BABYLON.MeshBuilder.CreateBox("cubo", { size: 2 }, escena);
-            cubo.position.y = 1;
-
-            var materialCubo = new BABYLON.StandardMaterial("materialCubo", escena);
-            materialCubo.diffuseColor = new BABYLON.Color3(0, 0, 0);
-            cubo.material = materialCubo;
-
-            //Creamos la interfaz gráfica para mostrar el texto y el logo de LabsLand
-            const gui = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("GUI");
-
-            //Creamos la función para cambiar el color del cubo y mostrar el texto
-            //si el cubo es clicado
-            escena.onPointerDown = function picked(){
-                const hit = escena.pick(escena.pointerX, escena.pointerY);
-
-                if(hit.pickedMesh && hit.pickedMesh.name == "cubo"){
-                    //Tomara un color al azar cada vez que es clicado
-                    hit.pickedMesh.material.diffuseColor = new BABYLON.Color3.Random();
-                    
-                    const txt = new BABYLON.GUI.TextBlock();
-                    txt.text = "Hola, soy un cubo";
-                    txt.color = "white";
-                    txt.fontSize = 20;
-                    txt.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-                    txt.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-                    gui.addControl(txt);
-                    
-                    
-                }
-            }
-
-            //Añadimos la imagen a la interfaz previamente creada
-            const img = new BABYLON.GUI.Image("img", "https://i.imgur.com/TdTN2n7.jpg");
-            img.width = "100px";
-            img.height = "100px";
-            img.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-            img.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
-            gui.addControl(img);
-            
-            return escena;
-        };
-
-
-
-        window.initFunction = async function() {
-                    
-                    
-                    
-            var asyncEngineCreation = async function() {
-                try {
-                return createDefaultEngine();
-                } catch(e) {
-                console.log("the available createEngine function failed. Creating the default engine instead");
-                return createDefaultEngine();
-                }
-            }
-
-            window.engine = await asyncEngineCreation();
-            if (!engine) throw 'engine should not be null.';
-            startRenderLoop(engine, canvas);
-            window.scene = createScene();
-        };
-        
-        initFunction().then(() => {sceneToRender = scene                    
-        });
-
-        // Resize
-        window.addEventListener("resize", function () {
-            engine.resize();
-        });
-    </script>
-</body>
+    
+            // Resize
+            window.addEventListener("resize", function () {
+                engine.resize();
+            });
+        </script>
+    </body>
 </html>
